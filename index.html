@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!-- Created with https://packager.turbowarp.org/ -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- We only include this to explicitly loosen the CSP of various packager environments. It does not provide any security. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:">
+  <title>minecraft scratch edition avanced</title>
+  <style>
+    body {
+      color: #ffffff;
+      font-family: sans-serif;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    :root, body.is-fullscreen {
+      background-color: #000000;
+    }
+    [hidden] {
+      display: none !important;
+    }
+    h1 {
+      font-weight: normal;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #app, #loading, #error, #launch {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: default;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #000000;
+    }
+    #launch {
+      background-color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+    .green-flag {
+      width: 80px;
+      height: 80px;
+      padding: 16px;
+      border-radius: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      border: 3px solid hsla(0, 100%, 100%, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    #loading {
+      
+    }
+    .progress-bar-outer {
+      border: 1px solid currentColor;
+      height: 10px;
+      width: 200px;
+      max-width: 200px;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      width: 0;
+      background-color: currentColor;
+    }
+    .loading-text, noscript {
+      font-weight: normal;
+      font-size: 36px;
+      margin: 0 0 16px;
+    }
+    .loading-image {
+      margin: 0 0 16px;
+    }
+    #error-message, #error-stack {
+      font-family: monospace;
+      max-width: 600px;
+      white-space: pre-wrap;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    #error-stack {
+      text-align: left;
+      max-height: 200px;
+      overflow: auto;
+    }
+    .control-button {
+      width: 2rem;
+      height: 2rem;
+      padding: 0.375rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
+      border: 0;
+      border-radius: 4px;
+    }
+    .control-button:hover {
+      background: #ff4c4c26;
+    }
+    .control-button.active {
+      background: #ff4c4c59;
+    }
+    .fullscreen-button {
+      background: white !important;
+    }
+    .standalone-fullscreen-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 0 0 0 4px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .sc-canvas {
+      cursor: auto;
+    }
+    .sc-monitor-root[data-opcode^="data_"] .sc-monitor-value-color {
+      background-color: #ff8c1a;
+    }
+    .sc-monitor-row-value-outer {
+      background-color: #fc662c;
+    }
+    .sc-monitor-row-value-editing .sc-monitor-row-value-outer {
+      background-color: #e25b27;
+    }
+    
+  </style>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/png;base64,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">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="launch" class="screen" hidden title="Click to start">
+    <div class="green-flag">
+      <svg viewBox="0 0 16.63 17.5" width="42" height="44">
+        <defs><style>.cls-1,.cls-2{fill:#4cbf56;stroke:#45993d;stroke-linecap:round;stroke-linejoin:round;}.cls-2{stroke-width:1.5px;}</style></defs>
+        <path class="cls-1" d="M.75,2A6.44,6.44,0,0,1,8.44,2h0a6.44,6.44,0,0,0,7.69,0V12.4a6.44,6.44,0,0,1-7.69,0h0a6.44,6.44,0,0,0-7.69,0"/>
+        <line class="cls-2" x1="0.75" y1="16.75" x2="0.75" y2="0.75"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="loading" class="screen">
+    <noscript>Enable JavaScript</noscript>
+    <h1 class="loading-text">loading</h1>
+    
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="loading-inner"></div></div>
+  </div>
+
+  <div id="error" class="screen" hidden>
+    <h1>Error</h1>
+    <details>
+      <summary id="error-message"></summary>
+      <p id="error-stack"></p>
+    </details>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const appElement = document.getElementById('app');
+    const launchScreen = document.getElementById('launch');
+    const loadingScreen = document.getElementById('loading');
+    const loadingInner = document.getElementById('loading-inner');
+    const errorScreen = document.getElementById('error');
+    const errorScreenMessage = document.getElementById('error-message');
+    const errorScreenStack = document.getElementById('error-stack');
+
+    const handleError = (error) => {
+      console.error(error);
+      if (!errorScreen.hidden) return;
+      errorScreen.hidden = false;
+      errorScreenMessage.textContent = '' + error;
+      let debug = error && error.stack || 'no stack';
+      debug += '\nUser agent: ' + navigator.userAgent;
+      errorScreenStack.textContent = debug;
+    };
+    const setProgress = (progress) => {
+      if (loadingInner) loadingInner.style.width = progress * 100 + '%';
+    };
+    const interpolate = (a, b, t) => a + t * (b - a);
+
+    try {
+      setProgress(0.1);
+
+      const scaffolding = new Scaffolding.Scaffolding();
+      scaffolding.width = 560;
+      scaffolding.height = 260;
+      scaffolding.resizeMode = "preserve-ratio";
+      scaffolding.editableLists = false;
+      scaffolding.usePackagedRuntime = true;
+      scaffolding.setup();
+      scaffolding.appendTo(appElement);
+
+      const vm = scaffolding.vm;
+      window.scaffolding = scaffolding;
+      window.vm = scaffolding.vm;
+      window.Scratch = {
+        vm,
+        renderer: vm.renderer,
+        audioEngine: vm.runtime.audioEngine,
+        bitmapAdapter: vm.runtime.v2BitmapAdapter,
+        videoProvider: vm.runtime.ioDevices.video.provider
+      };
+
+      scaffolding.setUsername("player####".replace(/#/g, () => Math.floor(Math.random() * 10)));
+      scaffolding.setAccentColor("#ff4c4c");
+
+      scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org","wss://clouddata.turbowarp.xyz"], "p4-@mcsea.sb3"));
+
+      vm.setTurboMode(false);
+      if (vm.setInterpolation) vm.setInterpolation(false);
+      if (vm.setFramerate) vm.setFramerate(30);
+      if (vm.renderer.setUseHighQualityRender) vm.renderer.setUseHighQualityRender(false);
+      if (vm.setRuntimeOptions) vm.setRuntimeOptions({
+        fencing: true,
+        miscLimits: true,
+        maxClones: 300,
+      });
+      if (vm.setCompilerOptions) vm.setCompilerOptions({
+        enabled: true,
+        warpTimer: false
+      });
+
+      if (typeof ScaffoldingAddons !== 'undefined') {
+        ScaffoldingAddons.run(scaffolding, {"gamepad":false,"pointerlock":false,"specialCloudBehaviors":false,"unsafeCloudBehaviors":false,"pause":false});
+      }
+
+      scaffolding.setExtensionSecurityManager({
+        getSandboxMode: 'unsandboxed',
+        canLoadExtensionFromProject: (url) => {
+          handleError(new Error('Missing custom extension: ' + url));
+          return Promise.resolve(false);
+        }
+      });
+      for (const extension of ["data:text/javascript;,(function(Scratch)%20%7B%20(function(Scratch)%20%7B%0D%0A%20%20'use%20strict'%3B%0D%0A%0D%0A%20%20class%20NavigatorInfo%20%7B%0D%0A%20%20%20%20getInfo%20()%20%7B%0D%0A%20%20%20%20%20%20return%20%7B%0D%0A%20%20%20%20%20%20%20%20id%3A%20'navigatorinfo'%2C%0D%0A%20%20%20%20%20%20%20%20name%3A%20'Navigator%20Info'%2C%0D%0A%20%20%20%20%20%20%20%20blocks%3A%20%5B%0D%0A%20%20%20%20%20%20%20%20%20%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20opcode%3A%20'getOS'%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20blockType%3A%20Scratch.BlockType.REPORTER%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20'operating%20system'%0D%0A%20%20%20%20%20%20%20%20%20%20%7D%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20opcode%3A%20'getBrowser'%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20blockType%3A%20Scratch.BlockType.REPORTER%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20'browser'%0D%0A%20%20%20%20%20%20%20%20%20%20%7D%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20opcode%3A%20'getMemory'%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20blockType%3A%20Scratch.BlockType.REPORTER%2C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20'device%20memory%20in%20GB'%0D%0A%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%5D%0D%0A%20%20%20%20%20%20%7D%3B%0D%0A%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20getOS%20()%20%7B%0D%0A%20%20%20%20%20%20const%20userAgent%20%3D%20navigator.userAgent%3B%0D%0A%20%20%20%20%20%20if%20(userAgent.includes('Windows'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Windows'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('Android'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Android'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('iPhone')%20%7C%7C%20userAgent.includes('iPod')%20%7C%7C%20userAgent.includes('iPad'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'iOS'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('Linux'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Linux'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('CrOS'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'ChromeOS'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('Mac%20OS'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'macOS'%3B%0D%0A%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20return%20'Other'%3B%0D%0A%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20getBrowser%20()%20%7B%0D%0A%20%20%20%20%20%20const%20userAgent%20%3D%20navigator.userAgent%3B%0D%0A%20%20%20%20%20%20if%20(userAgent.includes('Chrome'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Chrome'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('Firefox'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Firefox'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20if%20(userAgent.includes('Safari'))%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Safari'%3B%0D%0A%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20return%20'Other'%3B%0D%0A%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20getMemory%20()%20%7B%0D%0A%20%20%20%20%20%20%2F%2F%20%40ts-expect-error%0D%0A%20%20%20%20%20%20if%20(navigator.deviceMemory%20%3D%3D%20undefined)%20%7B%0D%0A%20%20%20%20%20%20%20%20return%20'Unsupported'%3B%0D%0A%20%20%20%20%20%20%7D%20else%20%7B%0D%0A%20%20%20%20%20%20%20%20%2F%2F%20%40ts-expect-error%0D%0A%20%20%20%20%20%20%20%20return%20navigator.deviceMemory%3B%0D%0A%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%7D%0D%0A%20%20%7D%0D%0A%0D%0A%20%20Scratch.extensions.register(new%20NavigatorInfo())%3B%0D%0A%7D(Scratch))%3B%0D%0A%20%7D)(Scratch)%3B"]) {
+        vm.extensionManager.loadExtensionURL(extension);
+      }
+
+    } catch (e) {
+      handleError(e);
+    }
+  </script>
+  
+  
+    <script>
+      const getProjectData = (function() {
+        const storage = scaffolding.storage;
+        storage.onprogress = (total, loaded) => {
+          setProgress(interpolate(0.2, 0.98, loaded / total));
+        };
+        
+        storage.addWebStore(
+          [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
+          (asset) => new URL('./assets/' + asset.assetId + '.' + asset.dataFormat, location).href
+        );
+        return () => new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        };
+        xhr.onerror = () => {
+          if (location.protocol === 'file:') {
+            reject(new Error('Zip environment must be used from a website, not from a file URL.'));
+          } else {
+            reject(new Error('Request to load project data failed.'));
+          }
+        };
+        xhr.onprogress = (e) => {
+          if (e.lengthComputable) {
+            setProgress(interpolate(0.1, 0.2, e.loaded / e.total));
+          }
+        };
+        xhr.responseType = 'arraybuffer';
+        xhr.open('GET', "./assets/project.json");
+        xhr.send();
+      });
+      })();
+    </script>
+  <script>
+    const run = async () => {
+      const projectData = await getProjectData();
+      await scaffolding.loadProject(projectData);
+      setProgress(1);
+      loadingScreen.hidden = true;
+      if (true) {
+        scaffolding.start();
+      } else {
+        launchScreen.hidden = false;
+        launchScreen.addEventListener('click', () => {
+          launchScreen.hidden = true;
+          scaffolding.start();
+        });
+        launchScreen.focus();
+      }
+    };
+    run().catch(handleError);
+  </script>
+</body>
+</html>
